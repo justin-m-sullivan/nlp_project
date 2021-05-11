@@ -12,6 +12,7 @@ To create the `data.json` file that contains the data.
 """
 import os
 import json
+import pandas as pd
 from typing import Dict, List, Optional, Union, cast
 import requests
 
@@ -395,3 +396,19 @@ def scrape_github_data() -> List[Dict[str, str]]:
 if __name__ == "__main__":
     data = scrape_github_data()
     json.dump(data, open("data.json", "w"), indent=1)
+
+def get_github_data(cached=False):
+    '''
+    This function reads in github repo readme content data 
+    by connectiing to github API and scrapping content from repos 
+    as defined by the scrape_github_data() function.
+    It returns a locally stored .csv file containing a single dataframe. 
+    '''
+    filename = 'github_readme.csv'
+    if cached == False or os.path.isfile(filename) == False:
+        df = pd.DataFrame(scrape_github_data())
+        df.to_csv(filename)
+    else:
+        df = pd.read_csv(filename, index_col = 0)
+
+    return df
